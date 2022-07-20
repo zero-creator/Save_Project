@@ -1,49 +1,72 @@
 package com.OnlineMobileStore.Controllers;
 
 
-import com.OnlineMobileStore.Exceptions.InvalidLoginDetails;
+import com.OnlineMobileStore.Exceptions.UserNotFoundException;
 import com.OnlineMobileStore.Services.UserService;
+import com.OnlineMobileStore.common.LoginResponse;
 import com.OnlineMobileStore.entities.UserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 
 @RestController
 @RequestMapping("User")
-
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     @Autowired
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserModel> regsiterUser( @RequestBody UserModel user) {
-        UserModel userNew = userService.addUser(user);
+    public LoginResponse regsiterUser( @RequestBody UserModel user) {
+        LoginResponse userNew = userService.addUser(user);
 
-        return new ResponseEntity<>(userNew, HttpStatus.CREATED);
+        return userNew;
     }
 
     @PostMapping("/login")
-        public ResponseEntity<Map<String,String>> getLogin(@RequestBody HashMap<String,String> Login_input) throws InvalidLoginDetails {
-             Map<String,String> response = new HashMap<String,String>();
-             String userName= Login_input.get("userName");
+        public ResponseEntity<?> getLogin(@RequestBody HashMap<String,String> Login_input){
+             String email= Login_input.get("emailId");
              String userPassword= Login_input.get("userPassword");
-             //response.put("status","unsuccessful");
-             int userId=userService.Login_User(userName,userPassword);
 
-                 response.put("status","successful");
-                 response.put("userId",Integer.toString(userId));
+             LoginResponse logres=userService.Login_User(email,userPassword);
 
-             return new ResponseEntity<Map<String,String>>(response,HttpStatus.OK);
+             return new ResponseEntity<>(logres , HttpStatus.OK);
     }
+
+
+    @GetMapping("/viewAllUsers")
+    public ResponseEntity<List<UserModel>> showAllUsers(){
+        List<UserModel> list=userService.showAllCustomers();
+        if(list!=null){
+            return new ResponseEntity<>(list,HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/viewUserById/{id}")
+    public UserModel showUserById(@PathVariable int id) throws UserNotFoundException {
+        return userService.getUserById(id);
+    }
+
+    @DeleteMapping("/deleteById/{id}")
+    public String deleteUserById(@PathVariable int id) throws UserNotFoundException {
+        return userService.DeleteCustomerById(id);
+    }
+
+    @PutMapping("/update/{id}")
+    public UserModel updateUser(@PathVariable int id,@RequestBody UserModel user) throws UserNotFoundException {
+        return userService.updateCustomer(id,user);
+    }
+
+
+
 
 
 }

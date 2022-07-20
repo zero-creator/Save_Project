@@ -1,6 +1,9 @@
 package com.OnlineMobileStore.Services;
 
+import com.OnlineMobileStore.Exceptions.MobileNotFoundException;
+import com.OnlineMobileStore.Exceptions.OrderNotFoundException;
 import com.OnlineMobileStore.Repositories.OrderRepo;
+import com.OnlineMobileStore.entities.MobileModel;
 import com.OnlineMobileStore.entities.OrderModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,19 +24,25 @@ public class OrderService {
     }
 
    //Add
-    public void save(OrderModel cartModel) {
-        orderRepo.save(cartModel);
-    }
+   public OrderModel save(OrderModel orderModel) {
+       return orderRepo.save(orderModel);
+   }
 
     //view
-    public Optional<OrderModel> findById(int id) {
-        return orderRepo.findById(id);
+    public OrderModel findById(int id) throws OrderNotFoundException {
+        Optional<OrderModel> optionalProduct = orderRepo.findById(id);
+        if (!optionalProduct.isPresent())
+            throw new MobileNotFoundException("Order With this Id Doesn't exist" + id);
+        return optionalProduct.get();
     }
 
-/*
-    public List<OrderModel> findAllByUserid(int id) {
-        return orderRepo.findAllByUserid(id);
+
+    public List<OrderModel> findAllByUserId(int id) throws OrderNotFoundException{
+        if(orderRepo.findAllByUserId(id).isEmpty())
+            throw new MobileNotFoundException("User With this Id Doesn't exist" + id);
+        return orderRepo.findAllByUserId(id);
     }
-*/
+
+
 
 }

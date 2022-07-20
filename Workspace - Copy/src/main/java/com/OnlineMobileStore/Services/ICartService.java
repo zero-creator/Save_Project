@@ -10,11 +10,11 @@ import java.util.Optional;
 
 @Service
 public interface ICartService {
-    List < CartModel > findAll();
-    void save(CartModel cartModel);
-    Optional< CartModel > findById(int id);
-    List<CartModel> findAllByUserid(int User_id);
-    void findByUserAndProduct(int User_id, int pid) throws MobileNotFoundException;
-    void delete(int id);
+    public List < CartModel > findAll();
+    public CartModel addCart(CartModel cartModel);
+    public CartModel findById(int id);
+    public List<CartModel> findAllByUserid(int User_id);
+    public Boolean findByUserAndProduct(int User_id, int pid) throws MobileNotFoundException;
+    public void delete(int id);
     public float TotalSum(int userId);
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/MobileModel")
-
+@CrossOrigin(origins = "http://localhost:3000")
 public class MobileController {
     @Autowired
     MobileService mobileService;
